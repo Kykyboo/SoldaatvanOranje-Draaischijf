@@ -10,7 +10,7 @@ const PORT = 3000;
 const CLIENT_ID = '1538600876523004004';
 const CLIENT_SECRET = 'LTChnaNPuGlgOr4GhzQDTLX6u3nNmDIC';
 const REDIRECT_URI = 'https://soldaatvanoranje-draaischijf.onrender.com/auth/discord/callback';
-const BOT_TOKEN = 'MTUzODYwMDg3NjUyMzAwNDAwNA.GMF9ci.6TNGCXWrqyIEYAqa3lsvC2famu9sGMFTlDeuUo';
+const BOT_TOKEN = process.env.BOT_TOKEN;
 const GUILD_ID = '1470855740993306808';
 const REQUIRED_ROLE_ID = '1537453646718050314';
 
