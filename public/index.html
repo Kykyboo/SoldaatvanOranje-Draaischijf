@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>Neodimium Turntable Control</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background: #121212; color: #fff; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; }
+        header { background: #1e1e1e; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+        main { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; flex-grow: 1; }
+        .card { background: #1e1e1e; padding: 15px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between; }
+        .grid-cues { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        button { background: #2d2d2d; color: white; border: 1px solid #444; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #bb86fc; color: #121212; }
+        .btn-reset { background: #cf6679; border: none; }
+        input { background: #2d2d2d; border: 1px solid #444; color: white; padding: 10px; border-radius: 6px; width: 100%; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🎭 Neodimium Turntable Control</h1>
+        <span style="color: #03dac6;">Verbonden</span>
+    </header>
+
+    <main>
+        <div class="card">
+            <h2>Theater Cues</h2>
+            <div class="grid-cues">
+                <button onclick="sendAction('cue', {index: 1})">Standby / Start</button>
+                <button onclick="sendAction('cue', {index: 2})">Cue 1: Intro</button>
+                <button onclick="sendAction('cue', {index: 3})">Cue 2: Stoel Draai</button>
+                <button onclick="sendAction('cue', {index: 4})">Cue 3: Versnelling</button>
+                <button onclick="sendAction('cue', {index: 5})">Cue 4: Outro</button>
+                <button class="btn-reset" onclick="sendAction('reset', {})">RESET</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Handmatig & Volgen</h2>
+            <div>
+                <p style="margin-bottom: 5px; color: #aaa;">Handmatige rotatie:</p>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="sendAction('manualM', {})" style="flex:1;">-15°</button>
+                    <button onclick="sendAction('manualP', {})" style="flex:1;">+15°</button>
+                </div>
+            </div>
+            <div>
+                <p style="margin-bottom: 5px; color: #aaa;">Speler Volgen:</p>
+                <input type="text" id="playerName" placeholder="Spelersnaam...">
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="toggleTrack(true)" style="flex:1; background: #03dac6; color:#121212;">Start</button>
+                    <button onclick="toggleTrack(false)" style="flex:1;">Stop</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Eenvoudige check bij laden of we ingelogd zijn
+        fetch('/command').then(res => {
+            if (res.status === 401) {
+                window.location.href = '/login.html';
+            }
+        });
+
+        async function sendAction(action, extraData) {
+            try {
+                const response = await fetch('/command-action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action, ...extraData })
+                });
+                if (response.status === 401) {
+                    window.location.href = '/login.html';
+                }
+            } catch (err) {
+                console.error("Fout:", err);
+            }
+        }
+
+        function toggleTrack(state) {
+            const playerName = document.getElementById('playerName').value;
+            if (state && !playerName) {
+                alert('Vul een spelersnaam in!');
+                return;
+            }
+            sendAction('track', { state: state, playerName: playerName });
+        }
+    </script>
+</body>
+</html>
