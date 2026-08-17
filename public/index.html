@@ -2,87 +2,345 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soldaat van Oranje - Turntable Control</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Draaicentrum - Soldaat van Oranje</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background: #121212; color: #fff; min-height: 100vh; display: flex; flex-direction: column; padding: 15px; max-width: 600px; margin: 0 auto; justify-content: space-between; }
-        header { background: #1e1e1e; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .card { background: #1e1e1e; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        h2 { font-size: 1.1rem; margin-bottom: 12px; color: #ddd; }
-        .grid-cues { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        button { background: #2d2d2d; color: white; border: 1px solid #444; padding: 16px; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; }
-        button:active { background: #e5a93b; color: #121212; }
-        .btn-reset { background: #cf6679; border: none; grid-column: span 2; color: #121212; }
-        input { background: #2d2d2d; border: 1px solid #444; color: white; padding: 14px; border-radius: 6px; width: 100%; margin-bottom: 10px; font-size: 1rem; }
-        .row { display: flex; gap: 10px; margin-bottom: 10px; }
-        .row button { flex: 1; }
-        .label { font-size: 0.9rem; color: #aaa; margin-bottom: 5px; display: block; }
+        :root {
+            --bg-color: #1a1a1a;
+            --card-bg: #262626;
+            --text-color: #ffffff;
+            --accent-color: #e5a93b; /* Goud/Oranje */
+            --accent-hover: #ffc154;
+            --danger-color: #ff4d4d;
+            --border-color: #404040;
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-stack);
+            -webkit-tap-highlight-color: transparent; /* Verwijdert blauwe gloed op mobiel bij klikken */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            padding-env(safe-area-inset-top); /* Notch ondersteuning */
+        }
+
+        /* Header - Blijft altijd bovenin staan */
+        header {
+            background: var(--card-bg);
+            padding: 15px 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .status-dot {
+            height: 12px;
+            width: 12px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        /* Main content - Verdeelt de ruimte */
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex: 1; /* Neemt alle beschikbare ruimte in */
+            overflow-y: auto; /* Scrollbaar als het scherm te klein is */
+            padding-bottom: 20px;
+        }
+
+        .section {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .section-titel {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #aaaaaa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* Grid voor de hoofdscènes */
+        .cues-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Altijd 2 knoppen breed */
+            gap: 15px;
+        }
+
+        /* Knop Stijlen */
+        button {
+            background: linear-gradient(180deg, #333333 0%, #262626 100%);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 25px 10px; /* Hoge knoppen voor makkelijk drukken */
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 700;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        button:active {
+            background: var(--accent-color);
+            color: #000;
+            transform: translateY(2px); /* Geeft een 'indruk' effect */
+            border-color: var(--accent-color);
+        }
+
+        /* Speciale knoppen */
+        .btn-hoofdtelefoon {
+            background: linear-gradient(180deg, #444444 0%, #333333 100%);
+            grid-column: span 2; /* Deze knop is net zo breed als twee kleintjes */
+            font-size: 1.2rem;
+        }
+
+        .btn-reset {
+            background: linear-gradient(180deg, #551111 0%, #330000 100%);
+            color: var(--danger-color);
+            border-color: #882222;
+            grid-column: span 2;
+            margin-top: 10px;
+        }
+        
+        .btn-reset:active {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        /* Handmatige bediening */
+        .handmatige-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .handmatige-row button {
+            flex: 1;
+            padding: 30px 10px;
+        }
+
+        /* Volg Systeem */
+        .volg-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        input[type="text"] {
+            background: #1a1a1a;
+            border: 2px solid var(--border-color);
+            color: var(--text-color);
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            width: 100%;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .volg-knoppen {
+            display: flex;
+            gap: 15px;
+        }
+
+        .volg-knoppen button {
+            flex: 1;
+        }
+        
+        .btn-volg-start {
+            background: linear-gradient(180deg, #2a4d3c 0%, #1a3327 100%);
+            color: #66ffb3;
+            border-color: #33664d;
+        }
+        
+        .btn-volg-start:active {
+            background: #06d6a0;
+            color: #000;
+        }
+
+        /* Hulptekst */
+        .help-text {
+            font-size: 0.9rem;
+            color: #888;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        /* Aanpassing voor tablets/desktops */
+        @media (min-width: 768px) {
+            body {
+                max-width: 800px;
+                margin: 0 auto;
+                padding-top: 40px;
+            }
+            
+            header {
+                padding: 20px 30px;
+            }
+
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            button {
+                padding: 30px 10px;
+                font-size: 1.2rem;
+            }
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>⭐ Soldaat van Oranje</h1>
-        <span style="color: #e5a93b; font-weight: bold;">● Online</span>
+        <h1>⭐ Draaiplateau Besturing</h1>
+        <div class="status-indicator">
+            <span class="status-dot"></span>
+            <span>Systeem Online</span>
+        </div>
     </header>
 
     <main>
-        <div class="card">
-            <h2>Cues</h2>
-            <div class="grid-cues">
-                <button onclick="sendAction('cue', {index: 1})">Start</button>
-                <button onclick="sendAction('cue', {index: 2})">Intro</button>
-                <button onclick="sendAction('cue', {index: 3})">Stoel</button>
-                <button onclick="sendAction('cue', {index: 4})">Versnel</button>
-                <button onclick="sendAction('cue', {index: 5})">Outro</button>
-                <button class="btn-reset" onclick="sendAction('reset', {})">RESET</button>
+        <!-- Sectie 1: Voorstelling (Meest gebruikt) -->
+        <div class="section">
+            <h2 class="section-titel">Vaste Scènes</h2>
+            <div class="cues-grid">
+                <button onclick="sendAction('cue', {index: 1})">1. Start / Standby</button>
+                <button onclick="sendAction('cue', {index: 2})">2. Introductie</button>
+                <button onclick="sendAction('cue', {index: 3})">3. Draai naar Zaal</button>
+                <button onclick="sendAction('cue', {index: 4})">4. Versnelling</button>
+                
+                <!-- Speciale knop over volle breedte -->
+                <button class="btn-hoofdtelefoon" onclick="sendAction('cue', {index: 5})">5. Finale / Outro</button>
+                
+                <!-- Grote rode reset knop onderaan -->
+                <button class="btn-reset" onclick="sendAction('reset', {})">NOODSTOP / RESET</button>
             </div>
         </div>
 
-        <div class="card">
-            <h2>Handmatig</h2>
-            <span class="label">Draai hoek</span>
-            <div class="row">
-                <button onclick="sendAction('manualM', {})">-15°</button>
-                <button onclick="sendAction('manualP', {})">+15°</button>
+        <!-- Sectie 2: Handmatige correcties -->
+        <div class="section">
+            <h2 class="section-titel">Handmatig Bijsturen</h2>
+            <div class="handmatige-row">
+                <button onclick="sendAction('manualM', {})">← Draai Links (15°)</button>
+                <button onclick="sendAction('manualP', {})">Rechts Draai → (15°)</button>
             </div>
         </div>
 
-        <div class="card">
-            <h2>Speler Volgen</h2>
-            <input type="text" id="playerName" placeholder="Naam speler...">
-            <div class="row">
-                <button onclick="toggleTrack(true)" style="background: #e5a93b; color: #121212;">Start Volgen</button>
-                <button onclick="toggleTrack(false)">Stop</button>
+        <!-- Sectie 3: Acteurs volgen -->
+        <div class="section">
+            <h2 class="section-titel">Automatisch Volgen</h2>
+            <div class="volg-container">
+                <input type="text" id="playerName" placeholder="Naam acteur invoeren...">
+                <div class="volg-knoppen">
+                    <button class="btn-volg-start" onclick="toggleTrack(true)">START VOLGEN</button>
+                    <button onclick="toggleTrack(false)">STOP VOLGEN</button>
+                </div>
             </div>
         </div>
+        
+        <p class="help-text">Vragen? Technische dienst: 020-1234567</p>
+
     </main>
 
     <script>
+        // --- Basis Systeem Logica ---
+
+        // Check verbinding bij laden
         fetch('/command').then(res => {
-            if (res.status === 401) window.location.href = '/login.html';
+            if (res.status === 401) {
+                // Optioneel: redirect naar login als authenticatie nodig is
+                // window.location.href = '/login.html';
+                console.log("Niet ingelogd, maar interface laadt wel in demo-modus.");
+            }
         });
 
+        // Functie om acties naar de server te sturen
         async function sendAction(action, extraData) {
+            console.log(`Actie verzonden: ${action}`, extraData);
+            
+            // Visuele feedback op knop (gebeurt al via CSS :active, maar kan hier uitgebreid)
+            
             try {
-                const res = await fetch('/command-action', {
+                // Dit is de backend call, uncomment en pas aan als de server live is
+                /*
+                const response = await fetch('/command-action', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action, ...extraData })
                 });
-                if (res.status === 401) window.location.href = '/login.html';
+                if (response.status === 401) {
+                    window.location.href = '/login.html';
+                }
+                */
             } catch (err) {
-                console.error(err);
+                console.error("Fout bij verbinden met server:", err);
+                alert("Verbindingsfout! Kan commando niet sturen.");
             }
         }
 
+        // Specifieke logica voor het volg-systeem
         function toggleTrack(state) {
-            const name = document.getElementById('playerName').value;
-            if (state && !name) {
-                alert('Vul eerst een naam in!');
-                return;
+            const nameInput = document.getElementById('playerName');
+            const name = nameInput.value.trim();
+
+            if (state === true) {
+                if (!name) {
+                    alert('Voer eerst de naam van de acteur in.');
+                    nameInput.focus();
+                    return;
+                }
+                if (!confirm(`Weet je zeker dat het plateau de acteur '${name}' moet gaan volgen?`)) {
+                    return;
+                }
+                // Visuele feedback
+                nameInput.style.borderColor = '#66ffb3';
+                setTimeout(() => nameInput.style.borderColor = 'var(--border-color)', 1000);
+            } else {
+                // Visuele feedback
+                nameInput.style.borderColor = '#ff4d4d';
+                setTimeout(() => nameInput.style.borderColor = 'var(--border-color)', 1000);
             }
+
             sendAction('track', { state: state, playerName: name });
         }
     </script>
