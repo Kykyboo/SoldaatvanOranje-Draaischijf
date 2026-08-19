@@ -16,7 +16,6 @@
         .card { background: #1e1e1e; padding: 10px; border-radius: 6px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
         .card-title { font-size: 0.8rem; color: #aaa; text-transform: uppercase; font-weight: bold; }
         
-        /* Cues container met scroll (tot 20+ items) */
         .cues-container { 
             background: #1e1e1e; 
             padding: 10px; 
@@ -62,7 +61,7 @@
     </header>
 
     <main>
-        <!-- Cues Sectie met Scrollvak voor 20+ items -->
+        <!-- Cues Sectie -->
         <div class="cues-container">
             <span class="card-title" style="margin-bottom: 6px;">Cues (1 t/m 20)</span>
             <div class="cues-scroll">
@@ -89,7 +88,17 @@
             </div>
         </div>
 
-        <!-- Handmatig & Volgen in compacte vakjes -->
+        <!-- Continue Snelheid Regelaar -->
+        <div class="card">
+            <span class="card-title">Draai Snelheid (Continu)</span>
+            <div class="row">
+                <input type="number" id="spinSpeed" placeholder="Snelheid (deg/s, bijv. 15)" value="15">
+                <button onclick="toggleSpin(true)" style="background: #e5a93b; color: #121212; flex: 0.8;">Start Snelheid</button>
+                <button onclick="toggleSpin(false)" style="flex: 0.6;">Stop</button>
+            </div>
+        </div>
+
+        <!-- Handmatig & Volgen -->
         <div class="card">
             <span class="card-title">Handmatig (15°)</span>
             <div class="row">
@@ -136,6 +145,12 @@
                 return;
             }
             sendAction('track', { state: state, playerName: name });
+        }
+
+        function toggleSpin(state) {
+            const speedInput = document.getElementById('spinSpeed').value;
+            const speed = parseFloat(speedInput) || 0;
+            sendAction('spin', { state: state, speed: speed });
         }
     </script>
 </body>
