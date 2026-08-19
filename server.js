@@ -1,103 +1,157 @@
-const express = require('express');
-const session = require('express-session');
-const axios = require('axios');
-const path = require('path');
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Soldaat van Oranje - Turntable</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100vh; width: 100vw; overflow: hidden; background: #121212; color: #fff; display: flex; flex-direction: column; padding: 10px; }
+        
+        header { background: #1e1e1e; padding: 10px 15px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; margin-bottom: 8px; }
+        header h1 { font-size: 1rem; }
+        
+        main { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; overflow: hidden; }
+        
+        .card { background: #1e1e1e; padding: 10px; border-radius: 6px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+        .card-title { font-size: 0.8rem; color: #aaa; text-transform: uppercase; font-weight: bold; }
+        
+        .cues-container { 
+            background: #1e1e1e; 
+            padding: 10px; 
+            border-radius: 6px; 
+            display: flex; 
+            flex-direction: column; 
+            flex-grow: 1; 
+            overflow: hidden; 
+        }
+        .cues-scroll { 
+            overflow-y: auto; 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 6px; 
+            padding-right: 4px;
+        }
+        .cues-scroll::-webkit-scrollbar { width: 6px; }
+        .cues-scroll::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+        
+        button { background: #2d2d2d; color: white; border: 1px solid #444; border-radius: 6px; cursor: pointer; font-weight: bold; padding: 10px 6px; font-size: 0.85rem; }
+        button:active { background: #e5a93b; color: #121212; }
+        
+        .cues-scroll button { padding: 12px 4px; font-size: 0.8rem; }
+        
+        .row { display: flex; gap: 6px; }
+        .row button { flex: 1; padding: 10px; font-size: 0.85rem; }
+        
+        input { background: #2d2d2d; border: 1px solid #444; color: white; padding: 8px 10px; border-radius: 6px; width: 100%; font-size: 0.85rem; outline: none; }
+        input:focus { border-color: #e5a93b; }
+        
+        .btn-reset { background: #cf6679; border: none; color: #121212; padding: 10px; font-size: 0.85rem; width: 100%; flex-shrink: 0; }
+        
+        @media (max-width: 600px) {
+            .cues-scroll { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
 
-const app = express();
-const PORT = 3000;
+    <header>
+        <h1>⭐ Soldaat van Oranje</h1>
+        <span style="color: #e5a93b; font-weight: bold; font-size: 0.85rem;">● Online</span>
+    </header>
 
-// Discord Configuratie (Vul hier jouw gegevens in!)
-const CLIENT_ID = '1538600876523004004';
-const CLIENT_SECRET = 'LTChnaNPuGlgOr4GhzQDTLX6u3nNmDIC';
-const REDIRECT_URI = 'https://soldaatvanoranje-draaischijf.onrender.com/auth/discord/callback';
-const BOT_TOKEN = process.env.BOT_TOKEN;
-const GUILD_ID = '1470855740993306808';
-const REQUIRED_ROLE_ID = '1537453646718050314';
+    <main>
+        <!-- Cues Sectie -->
+        <div class="cues-container">
+            <span class="card-title" style="margin-bottom: 6px;">Cues (1 t/m 20)</span>
+            <div class="cues-scroll">
+                <button onclick="sendAction('cue', {index: 1})">1. Start</button>
+                <button onclick="sendAction('cue', {index: 2})">2. Intro</button>
+                <button onclick="sendAction('cue', {index: 3})">3. Stoel</button>
+                <button onclick="sendAction('cue', {index: 4})">4. Versnel</button>
+                <button onclick="sendAction('cue', {index: 5})">5. Outro</button>
+                <button onclick="sendAction('cue', {index: 6})">6. Scene 6</button>
+                <button onclick="sendAction('cue', {index: 7})">7. Scene 7</button>
+                <button onclick="sendAction('cue', {index: 8})">8. Scene 8</button>
+                <button onclick="sendAction('cue', {index: 9})">9. Scene 9</button>
+                <button onclick="sendAction('cue', {index: 10})">10. Pauze</button>
+                <button onclick="sendAction('cue', {index: 11})">11. Act 2</button>
+                <button onclick="sendAction('cue', {index: 12})">12. Scene 12</button>
+                <button onclick="sendAction('cue', {index: 13})">13. Scene 13</button>
+                <button onclick="sendAction('cue', {index: 14})">14. Scene 14</button>
+                <button onclick="sendAction('cue', {index: 15})">15. Scene 15</button>
+                <button onclick="sendAction('cue', {index: 16})">16. Scene 16</button>
+                <button onclick="sendAction('cue', {index: 17})">17. Scene 17</button>
+                <button onclick="sendAction('cue', {index: 18})">18. Scene 18</button>
+                <button onclick="sendAction('cue', {index: 19})">19. Finale</button>
+                <button onclick="sendAction('cue', {index: 20})">20. Einde</button>
+            </div>
+        </div>
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(session({
-    secret: 'neodimium_secret_key',
-    resave: false,
-    saveUninitialized: false
-}));
+        <!-- Continue Snelheid Regelaar -->
+        <div class="card">
+            <span class="card-title">Draai Snelheid (Continu)</span>
+            <div class="row">
+                <input type="number" id="spinSpeed" placeholder="Snelheid (deg/s, bijv. 15)" value="15">
+                <button onclick="toggleSpin(true)" style="background: #e5a93b; color: #121212; flex: 0.8;">Start Snelheid</button>
+                <button onclick="toggleSpin(false)" style="flex: 0.6;">Stop</button>
+            </div>
+        </div>
 
-// Statische bestanden (public map) direct beschikbaar maken
-app.use(express.static(path.join(__dirname, 'public')));
+        <!-- Handmatig & Volgen -->
+        <div class="card">
+            <span class="card-title">Handmatig (15°)</span>
+            <div class="row">
+                <button onclick="sendAction('manualM', {})">← Links</button>
+                <button onclick="sendAction('manualP', {})">Rechts →</button>
+            </div>
+        </div>
 
-let latestCommand = null;
+        <div class="card">
+            <span class="card-title">Speler Volgen</span>
+            <div class="row">
+                <input type="text" id="playerName" placeholder="Naam speler...">
+                <button onclick="toggleTrack(true)" style="background: #e5a93b; color: #121212; flex: 0.8;">Start</button>
+                <button onclick="toggleTrack(false)" style="flex: 0.6;">Stop</button>
+            </div>
+        </div>
 
-// Discord Login Start
-app.get('/auth/discord', (req, res) => {
-    const discordLoginUrl = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds.members.read`;
-    res.redirect(discordLoginUrl);
-});
+        <!-- Reset -->
+        <button class="btn-reset" onclick="sendAction('reset', {})">NOODSTOP / RESET</button>
+    </main>
 
-// Discord Callback & Rol Check
-app.get('/auth/discord/callback', async (req, res) => {
-    const code = req.query.code;
-    if (!code) return res.send('Geen code ontvangen.');
-
-    try {
-        const tokenResponse = await axios.post('https://discord.com/api/oauth2/token', new URLSearchParams({
-            client_id: CLIENT_ID,
-            client_secret: CLIENT_SECRET,
-            grant_type: 'authorization_code',
-            code: code,
-            redirect_uri: REDIRECT_URI,
-        }), {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    <script>
+        fetch('/command').then(res => {
+            if (res.status === 401) window.location.href = '/login.html';
         });
 
-        const accessToken = tokenResponse.data.access_token;
-
-        const userResponse = await axios.get('https://discord.com/api/users/@me', {
-            headers: { Authorization: `Bearer ${accessToken}` }
-        });
-
-        const memberResponse = await axios.get(`https://discord.com/api/users/@me/guilds/${GUILD_ID}/member`, {
-            headers: { Authorization: `Bearer ${accessToken}` }
-        });
-
-        const hasRole = memberResponse.data.roles.includes(REQUIRED_ROLE_ID);
-
-        if (!hasRole) {
-            return res.send('<h2>Toegang geweigerd</h2><p>Je hebt de juiste Discord-rol niet.</p>');
+        async function sendAction(action, extraData) {
+            try {
+                const res = await fetch('/command-action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action, ...extraData })
+                });
+                if (res.status === 401) window.location.href = '/login.html';
+            } catch (err) {
+                console.error(err);
+            }
         }
 
-        req.session.user = {
-            username: userResponse.data.username,
-            authenticated: true
-        };
+        function toggleTrack(state) {
+            const name = document.getElementById('playerName').value;
+            if (state && !name) {
+                alert('Vul eerst een naam in!');
+                return;
+            }
+            sendAction('track', { state: state, playerName: name });
+        }
 
-        res.redirect('/');
-    } catch (error) {
-        console.error('Login fout:', error.response?.data || error.message);
-        res.send('Er is iets misgegaan tijdens het inloggen.');
-    }
-});
-
-// Check of gebruiker is ingelogd voor acties
-function checkAuth(req, res, next) {
-    if (req.session.user && req.session.user.authenticated) {
-        next();
-    } else {
-        res.status(401).json({ error: 'Niet ingelogd' });
-    }
-}
-
-// Actie doorsturen naar Roblox
-app.post('/command-action', checkAuth, (req, res) => {
-    latestCommand = req.body;
-    res.json({ success: true });
-});
-
-// Roblox haalt commando op
-app.get('/command', (req, res) => {
-    res.json(latestCommand || {});
-    latestCommand = null;
-});
-
-app.listen(PORT, () => {
-    console.log(`Server draait op http://localhost:${PORT}`);
-});
+        function toggleSpin(state) {
+            const speedInput = document.getElementById('spinSpeed').value;
+            const speed = parseFloat(speedInput) || 0;
+            sendAction('spin', { state: state, speed: speed });
+        }
+    </script>
+</body>
+</html>
