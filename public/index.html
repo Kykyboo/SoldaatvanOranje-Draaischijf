@@ -61,7 +61,6 @@
     </header>
 
     <main>
-        <!-- Cues Sectie -->
         <div class="cues-container">
             <span class="card-title" style="margin-bottom: 6px;">Cues (1 t/m 20)</span>
             <div class="cues-scroll">
@@ -88,17 +87,15 @@
             </div>
         </div>
 
-        <!-- Continue Snelheid Regelaar -->
         <div class="card">
             <span class="card-title">Draai Snelheid (Continu)</span>
             <div class="row">
-                <input type="number" id="spinSpeed" placeholder="Snelheid (deg/s, bijv. 15)" value="15">
+                <input type="number" id="spinSpeed" placeholder="Snelheid (deg/s)" value="15">
                 <button onclick="toggleSpin(true)" style="background: #e5a93b; color: #121212; flex: 0.8;">Start Snelheid</button>
                 <button onclick="toggleSpin(false)" style="flex: 0.6;">Stop</button>
             </div>
         </div>
 
-        <!-- Handmatig & Volgen -->
         <div class="card">
             <span class="card-title">Handmatig (15°)</span>
             <div class="row">
@@ -116,23 +113,17 @@
             </div>
         </div>
 
-        <!-- Reset -->
         <button class="btn-reset" onclick="sendAction('reset', {})">NOODSTOP / RESET</button>
     </main>
 
     <script>
-        fetch('/command').then(res => {
-            if (res.status === 401) window.location.href = '/login.html';
-        });
-
         async function sendAction(action, extraData) {
             try {
-                const res = await fetch('/command-action', {
+                await fetch('/command-action', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action, ...extraData })
                 });
-                if (res.status === 401) window.location.href = '/login.html';
             } catch (err) {
                 console.error(err);
             }
