@@ -40,7 +40,7 @@
         
         .cues-scroll button { padding: 12px 4px; font-size: 0.8rem; }
         
-        .row { display: flex; gap: 6px; }
+        .row { display: flex; gap: 6px; align-items: center; }
         .row button { flex: 1; padding: 10px; font-size: 0.85rem; }
         
         input { background: #2d2d2d; border: 1px solid #444; color: white; padding: 8px 10px; border-radius: 6px; width: 100%; font-size: 0.85rem; outline: none; }
@@ -61,36 +61,45 @@
     </header>
 
     <main>
+        <!-- CUES SECTIE MET TIJD (SECONDEN) INSTELLING -->
+        <div class="card" style="flex-shrink: 0;">
+            <span class="card-title">Cue Duur Instelling</span>
+            <div class="row">
+                <span style="font-size: 0.8rem; color: #ccc; width: 130px;">Tijd in seconden:</span>
+                <input type="number" id="cueDuration" placeholder="Bijv. 15" value="14">
+            </div>
+        </div>
+
         <div class="cues-container">
-            <span class="card-title" style="margin-bottom: 6px;">Cues (1 t/m 20)</span>
+            <span class="card-title" style="margin-bottom: 6px;">Cues (1 t/m 20) - Wordt zo sloom als ingesteld</span>
             <div class="cues-scroll">
-                <button onclick="sendAction('cue', {index: 1})">1. Start</button>
-                <button onclick="sendAction('cue', {index: 2})">2. Intro</button>
-                <button onclick="sendAction('cue', {index: 3})">3. Stoel</button>
-                <button onclick="sendAction('cue', {index: 4})">4. Versnel</button>
-                <button onclick="sendAction('cue', {index: 5})">5. Outro</button>
-                <button onclick="sendAction('cue', {index: 6})">6. Scene 6</button>
-                <button onclick="sendAction('cue', {index: 7})">7. Scene 7</button>
-                <button onclick="sendAction('cue', {index: 8})">8. Scene 8</button>
-                <button onclick="sendAction('cue', {index: 9})">9. Scene 9</button>
-                <button onclick="sendAction('cue', {index: 10})">10. Pauze</button>
-                <button onclick="sendAction('cue', {index: 11})">11. Act 2</button>
-                <button onclick="sendAction('cue', {index: 12})">12. Scene 12</button>
-                <button onclick="sendAction('cue', {index: 13})">13. Scene 13</button>
-                <button onclick="sendAction('cue', {index: 14})">14. Scene 14</button>
-                <button onclick="sendAction('cue', {index: 15})">15. Scene 15</button>
-                <button onclick="sendAction('cue', {index: 16})">16. Scene 16</button>
-                <button onclick="sendAction('cue', {index: 17})">17. Scene 17</button>
-                <button onclick="sendAction('cue', {index: 18})">18. Scene 18</button>
-                <button onclick="sendAction('cue', {index: 19})">19. Finale</button>
-                <button onclick="sendAction('cue', {index: 20})">20. Einde</button>
+                <button onclick="sendCue(1, 0)">1. Start (0°)</button>
+                <button onclick="sendCue(2, 45)">2. Intro (45°)</button>
+                <button onclick="sendCue(3, 180)">3. Stoel (180°)</button>
+                <button onclick="sendCue(4, 270)">4. Versnel (270°)</button>
+                <button onclick="sendCue(5, 90)">5. Outro (90°)</button>
+                <button onclick="sendCue(6, 120)">6. Scene 6</button>
+                <button onclick="sendCue(7, 150)">7. Scene 7</button>
+                <button onclick="sendCue(8, 210)">8. Scene 8</button>
+                <button onclick="sendCue(9, 240)">9. Scene 9</button>
+                <button onclick="sendCue(10, 300)">10. Pauze</button>
+                <button onclick="sendCue(11, 330)">11. Act 2</button>
+                <button onclick="sendCue(12, 30)">12. Scene 12</button>
+                <button onclick="sendCue(13, 60)">13. Scene 13</button>
+                <button onclick="sendCue(14, 100)">14. Scene 14</button>
+                <button onclick="sendCue(15, 135)">15. Scene 15</button>
+                <button onclick="sendCue(16, 190)">16. Scene 16</button>
+                <button onclick="sendCue(17, 220)">17. Scene 17</button>
+                <button onclick="sendCue(18, 250)">18. Scene 18</button>
+                <button onclick="sendCue(19, 310)">19. Finale</button>
+                <button onclick="sendCue(20, 0)">20. Einde</button>
             </div>
         </div>
 
         <div class="card">
             <span class="card-title">Draai Snelheid (Continu)</span>
             <div class="row">
-                <input type="number" id="spinSpeed" placeholder="Snelheid (deg/s)" value="15">
+                <input type="number" id="spinSpeed" placeholder="Snelheid (deg/s)" value="5">
                 <button onclick="toggleSpin(true)" style="background: #e5a93b; color: #121212; flex: 0.8;">Start Snelheid</button>
                 <button onclick="toggleSpin(false)" style="flex: 0.6;">Stop</button>
             </div>
@@ -127,6 +136,12 @@
             } catch (err) {
                 console.error(err);
             }
+        }
+
+        function sendCue(index, angle) {
+            const durationInput = document.getElementById('cueDuration').value;
+            const duration = parseFloat(durationInput) || 14;
+            sendAction('cue', { index: index, angle: angle, duration: duration });
         }
 
         function toggleTrack(state) {
