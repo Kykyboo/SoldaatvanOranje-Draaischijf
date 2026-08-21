@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 
-// Middleware voor het paren van JSON en statische bestanden
+// Middleware voor JSON en statische bestanden
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -13,13 +13,13 @@ let latestCommand = { action: "none" };
 app.get('/command', (req, res) => {
     res.json(latestCommand);
 
-    // DIRECT WISSEN: Voorkom oneindige herhalingen
+    // DIRECT WISSEN: Voorkom dat Roblox herhaaldelijk hetzelfde commando uitvoert
     if (latestCommand.action !== "none") {
         latestCommand = { action: "none" };
     }
 });
 
-// Endpoint voor de website om acties/commando's te versturen (inclusief dynamische duur)
+// Endpoint voor de website om acties te versturen
 app.post('/command-action', (req, res) => {
     latestCommand = req.body;
     console.log("Commando ontvangen vanuit web UI:", latestCommand);
@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Start de server op Render of lokaal poort 3000
+// Start de server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server draait succesvol op poort ${PORT}`);
