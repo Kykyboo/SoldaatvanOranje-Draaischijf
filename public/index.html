@@ -3,51 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Soldaat van Oranje - Turntable</title>
+    <title>Soldaat van Oranje - Draaischijf Control</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
-        html, body { height: 100vh; width: 100vw; overflow: hidden; background: #121212; color: #fff; display: flex; flex-direction: column; padding: 10px; }
+        :root {
+            --bg-main: #0d0d0d;
+            --bg-card: #18181b;
+            --bg-element: #242428;
+            --border-color: #2f2f35;
+            --accent-gold: #f5b041;
+            --accent-gold-active: #d4ac0d;
+            --accent-danger: #e74c3c;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        header { background: #1e1e1e; padding: 10px 15px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; margin-bottom: 8px; }
-        header h1 { font-size: 1rem; }
+        html, body { height: 100vh; width: 100vw; overflow: hidden; background: var(--bg-main); color: var(--text-main); display: flex; flex-direction: column; padding: 12px; }
         
-        main { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; overflow: hidden; }
+        header { background: var(--bg-card); border: 1px solid var(--border-color); padding: 12px 18px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
+        .status-badge { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 600; color: var(--accent-gold); background: rgba(245, 176, 65, 0.1); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(245, 176, 65, 0.2); }
+        .status-dot { width: 8px; height: 8px; background: var(--accent-gold); border-radius: 50%; box-shadow: 0 0 8px var(--accent-gold); }
+
+        main { display: flex; flex-direction: column; gap: 10px; flex-grow: 1; overflow: hidden; }
         
-        .card { background: #1e1e1e; padding: 10px; border-radius: 6px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
-        .card-title { font-size: 0.8rem; color: #aaa; text-transform: uppercase; font-weight: bold; }
+        .card { background: var(--bg-card); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .card-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.8px; }
         
         .cues-container { 
-            background: #1e1e1e; 
-            padding: 10px; 
-            border-radius: 6px; 
+            background: var(--bg-card); 
+            border: 1px solid var(--border-color);
+            padding: 12px; 
+            border-radius: 10px; 
             display: flex; 
             flex-direction: column; 
             flex-grow: 1; 
             overflow: hidden; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
         .cues-scroll { 
             overflow-y: auto; 
             display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 6px; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 8px; 
             padding-right: 4px;
         }
         .cues-scroll::-webkit-scrollbar { width: 6px; }
-        .cues-scroll::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+        .cues-scroll::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
         
-        button { background: #2d2d2d; color: white; border: 1px solid #444; border-radius: 6px; cursor: pointer; font-weight: bold; padding: 10px 6px; font-size: 0.85rem; }
-        button:active { background: #e5a93b; color: #121212; }
+        button { background: var(--bg-element); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; font-weight: 600; padding: 12px 8px; font-size: 0.85rem; transition: all 0.15s ease; }
+        button:hover { border-color: var(--text-muted); }
+        button:active { background: var(--accent-gold); color: var(--bg-main); border-color: var(--accent-gold); }
         
-        .cues-scroll button { padding: 12px 4px; font-size: 0.8rem; }
+        .cues-scroll button { padding: 14px 6px; font-size: 0.8rem; background: rgba(255,255,255,0.02); }
         
-        .row { display: flex; gap: 6px; align-items: center; }
-        .row button { flex: 1; padding: 10px; font-size: 0.85rem; }
+        .row { display: flex; gap: 8px; align-items: center; }
+        .row button { flex: 1; padding: 10px; }
         
-        input { background: #2d2d2d; border: 1px solid #444; color: white; padding: 8px 10px; border-radius: 6px; width: 100%; font-size: 0.85rem; outline: none; }
-        input:focus { border-color: #e5a93b; }
+        input { background: var(--bg-element); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 8px; width: 100%; font-size: 0.9rem; outline: none; transition: border-color 0.15s ease; }
+        input:focus { border-color: var(--accent-gold); }
         
-        .btn-reset { background: #cf6679; border: none; color: #121212; padding: 10px; font-size: 0.85rem; width: 100%; flex-shrink: 0; }
+        .btn-primary { background: var(--accent-gold); color: var(--bg-main); border: none; font-weight: 700; }
+        .btn-primary:active { background: var(--accent-gold-active); }
         
+        .btn-reset { background: var(--accent-danger); border: none; color: white; padding: 12px; font-size: 0.9rem; font-weight: 700; width: 100%; border-radius: 8px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3); transition: filter 0.15s ease; }
+        .btn-reset:active { filter: brightness(0.85); }
+
+        @media (max-width: 800px) {
+            .cues-scroll { grid-template-columns: repeat(4, 1fr); }
+        }
         @media (max-width: 600px) {
             .cues-scroll { grid-template-columns: repeat(3, 1fr); }
         }
@@ -56,15 +81,18 @@
 <body>
 
     <header>
-        <h1>⭐ Soldaat van Oranje</h1>
-        <span style="color: #e5a93b; font-weight: bold; font-size: 0.85rem;">● Online</span>
+        <h1>⭐ Soldaat van Oranje <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">| Turntable Control</span></h1>
+        <div class="status-badge">
+            <div class="status-dot"></div>
+            Online
+        </div>
     </header>
 
     <main>
+        <!-- CUES SECTIE -->
         <div class="cues-container">
-            <span class="card-title" style="margin-bottom: 6px;">Cues (Direct Klikken & Gaan)</span>
+            <span class="card-title" style="margin-bottom: 8px;">Theater Cues (Direct Klikken)</span>
             <div class="cues-scroll">
-                <!-- Vooraf ingestelde hoeken en veilige trage tijden per cue -->
                 <button onclick="sendCue(1, 0, 14)">1. Start</button>
                 <button onclick="sendCue(2, 45, 14)">2. Intro</button>
                 <button onclick="sendCue(3, 180, 18)">3. Stoel</button>
@@ -88,33 +116,47 @@
             </div>
         </div>
 
+        <!-- VRIJ INSTELLEN NAAR X GRADEN -->
         <div class="card">
-            <span class="card-title">Draai Snelheid (Continu)</span>
+            <span class="card-title">Handmatig naar Graden (Custom)</span>
             <div class="row">
-                <input type="number" id="spinSpeed" placeholder="Snelheid (deg/s)" value="3">
-                <button onclick="toggleSpin(true)" style="background: #e5a93b; color: #121212; flex: 0.8;">Start Snelheid</button>
-                <button onclick="toggleSpin(false)" style="flex: 0.6;">Stop</button>
+                <input type="number" id="customAngle" placeholder="Graden (bijv. 90)" style="flex: 1.5;">
+                <input type="number" id="customDuration" placeholder="Tijd in sec (optioneel)" style="flex: 1.5;" value="14">
+                <button class="btn-primary" onclick="sendCustomAngle()" style="flex: 1;">Ga naar Graden</button>
             </div>
         </div>
 
+        <!-- CONTINUE DRAAIEN -->
         <div class="card">
-            <span class="card-title">Handmatig (15°)</span>
+            <span class="card-title">Continu Draaien (Snelheid)</span>
             <div class="row">
-                <button onclick="sendAction('manualM', {})">← Links</button>
-                <button onclick="sendAction('manualP', {})">Rechts →</button>
+                <input type="number" id="spinSpeed" placeholder="Snelheid (deg/s)" value="3" style="flex: 1.2;">
+                <button class="btn-primary" onclick="toggleSpin(true)" style="flex: 1.2;">Start Snelheid</button>
+                <button onclick="toggleSpin(false)" style="flex: 0.8; background: #333;">Stop</button>
             </div>
         </div>
 
-        <div class="card">
-            <span class="card-title">Speler Volgen</span>
-            <div class="row">
-                <input type="text" id="playerName" placeholder="Naam speler...">
-                <button onclick="toggleTrack(true)" style="background: #e5a93b; color: #121212; flex: 0.8;">Start</button>
-                <button onclick="toggleTrack(false)" style="flex: 0.6;">Stop</button>
+        <!-- HANDMATIG STAPPEN & SPELER VOLGEN -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="card" style="margin: 0;">
+                <span class="card-title">Stap (±15°)</span>
+                <div class="row">
+                    <button onclick="sendAction('manualM', {})">← Links</button>
+                    <button onclick="sendAction('manualP', {})">Rechts →</button>
+                </div>
+            </div>
+
+            <div class="card" style="margin: 0;">
+                <span class="card-title">Speler Volgen</span>
+                <div class="row">
+                    <input type="text" id="playerName" placeholder="Naam speler...">
+                    <button class="btn-primary" onclick="toggleTrack(true)" style="flex: 0.7;">Start</button>
+                    <button onclick="toggleTrack(false)" style="flex: 0.5; background: #333;">Stop</button>
+                </div>
             </div>
         </div>
 
-        <button class="btn-reset" onclick="sendAction('reset', {})">NOODSTOP / RESET</button>
+        <button class="btn-reset" onclick="sendAction('reset', {})">⚠️ NOODSTOP / RESET SCHIJF</button>
     </main>
 
     <script>
@@ -134,10 +176,23 @@
             sendAction('cue', { index: index, angle: angle, duration: duration });
         }
 
+        function sendCustomAngle() {
+            const angleInput = document.getElementById('customAngle').value;
+            const durationInput = document.getElementById('customDuration').value;
+            const angle = parseFloat(angleInput);
+            
+            if (isNaN(angle)) {
+                alert('Vul een geldig graden-getal in!');
+                return;
+            }
+            const duration = parseFloat(durationInput) || 14;
+            sendAction('cue', { index: 0, angle: angle, duration: duration });
+        }
+
         function toggleTrack(state) {
             const name = document.getElementById('playerName').value;
             if (state && !name) {
-                alert('Vul eerst een naam in!');
+                alert('Vul eerst een speler naam in!');
                 return;
             }
             sendAction('track', { state: state, playerName: name });
