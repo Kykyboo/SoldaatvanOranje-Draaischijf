@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="nl" dir="ltr" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <link rel="icon" href="https://cdn.discordapp.com/attachments/1517839791805300828/1546822057126404116/Logo_NB.png" />
+    <title>Soldaat van Oranje - Inloggen</title>
+
+    <!-- Bootstrap 5 & Inter Font & Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --font-family: 'Inter', sans-serif;
+            --brand-color: #f49b3a;
+            --brand-color-hover: #df8a28;
+            --input-bg: rgba(18, 24, 33, 0.7);
+            --input-border: rgba(44, 53, 67, 0.8);
+            --card-bg: rgba(11, 17, 26, 0.88);
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.85), rgba(244, 155, 58, 0.15)), 
+                        url("../assets/background.png") center/cover no-repeat fixed;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            overflow: hidden;
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(244, 155, 58, 0.15);
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            text-align: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-container {
+            margin-bottom: 12px;
+        }
+
+        .logo-img {
+            max-height: 52px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+        }
+
+        .sub-title {
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            margin-top: 6px;
+            margin-bottom: 8px;
+        }
+
+        .desc-text {
+            color: #9ca3af;
+            font-size: 0.85rem;
+            margin-bottom: 28px;
+            line-height: 1.4;
+        }
+
+        .btn-discord {
+            background-color: var(--brand-color);
+            color: #121212;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            width: 100%;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 14px rgba(244, 155, 58, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-discord:hover {
+            background-color: var(--brand-color-hover);
+            box-shadow: 0 6px 20px rgba(244, 155, 58, 0.5);
+            transform: translateY(-1px);
+            color: #121212;
+        }
+
+        .btn-discord:active {
+            transform: translateY(0);
+        }
+
+        .alert-custom {
+            background-color: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            color: #f87171;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <!-- Logo & Subtitel -->
+        <div class="logo-container">
+            <img src="https://cdn.discordapp.com/attachments/1517839791805300828/1546822057126404116/Logo_NB.png?ex=6aa12dcc&is=6a9fdc4c&hm=d03c93ba9e4a7f415ce7bca2566e5a3adbd8dc34851be30d9ab02d9a3f355636&" alt="Logo" class="logo-img">
+        </div>
+        <div class="sub-title">Draaischijf Bediening</div>
+        <p class="desc-text">Log in met je Discord-account om te verifiëren of je de juiste operator-rol hebt.</p>
+
+        <!-- Error melding -->
+        <div id="loginError" class="alert alert-custom d-none" role="alert">
+            <i class="bi bi-exclamation-circle-fill me-2"></i><span id="errorText">Geen toegang: Je hebt de vereiste Discord-rol niet.</span>
+        </div>
+
+        <!-- Discord Inlogknop met de nieuwe brandkleur -->
+        <a href="/auth/discord" class="btn-discord">
+            <i class="bi bi-discord fs-5"></i>
+            <span>Inloggen met Discord</span>
+        </a>
+    </div>
+
+    <script>
+        // Check of er een error meegegeven is via de URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('error') === 'unauthorized') {
+            document.getElementById('loginError').classList.remove('d-none');
+        }
+
+        // Automatisch doorsturen als de localStorage al aangeeft dat je bent ingelogd
+        window.onload = function() {
+            try {
+                if (localStorage.getItem('isLoggedIn')) {
+                    window.location.href = '/';
+                }
+            } catch (e) {
+                console.error("Storage fout:", e);
+            }
+        }
+    </script>
+</body>
+</html>

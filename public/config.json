@@ -1,0 +1,10 @@
+{
+  "cues": [
+    { "index": 1, "name": "Opening / Minerva", "angle": -5.052, "duration": 30, "defaultDirection": "rechts" },
+    { "index": 2, "name": "Kwestie van Tijd 1", "angle": -152.213, "duration": 34, "defaultDirection": "rechts" },
+    { "index": 3, "name": "Kwestie van Tijd 2", "angle": -136.412, "duration": 7, "defaultDirection": "links" },
+    { "index": 4, "name": "Kwestie van Tijd 3", "angle": -5.052, "duration": 28, "defaultDirection": "rechts" },
+    { "index": 5, "name": "Naar Kazerne", "angle": 30.11, "duration": 37, "defaultDirection": "rechts" },
+    { "index": 20, "name": "Parkeerstand", "angle": 0, "duration": 14, "defaultDirection": "rechts" }
+  ]
+}
