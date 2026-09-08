@@ -9,7 +9,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Configuratie
 const CLIENT_ID = process.env.DISCORD_CLIENT_ID || '1538600876523004004';
 const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET || 'pYsfza90eR_nFT0zCL3L9leGTpXLdLQG';
-const REDIRECT_URI = process.env.DISCORD_REDIRECT_URI || 'http://192.168.2.29:3000/auth/discord/callback';
+const REDIRECT_URI = process.env.DISCORD_REDIRECT_URI || 'https://soldaatvanoranje-draaischijf.onrender.com/auth/discord/callback';
 const GUILD_ID = process.env.DISCORD_GUILD_ID || '1470855740993306808';
 const REQUIRED_ROLE_ID = process.env.DISCORD_ROLE_ID || '1545347819999858742';
 
